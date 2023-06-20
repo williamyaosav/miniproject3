@@ -18,10 +18,10 @@ long long State::evaluate(int player){
   auto oppo_board = this->board.board[1-player];
   for(int i=0; i<BOARD_H; i+=1){
     for(int j=0; j<BOARD_W; j+=1){
-      if(i<5 && !player && self_board[i][j])val+=(5-i);
+      /*if(i<5 && !player && self_board[i][j])val+=(5-i);
       if(i<5 && player && oppo_board[i][j])val-=(5-i);
       if(i && !player && oppo_board[i][j])val-=(i);
-      if(i && player && self_board[i][j])val+=(i);
+      if(i && player && self_board[i][j])val+=(i);*/
       switch (self_board[i][j])
       {
       case 6:
