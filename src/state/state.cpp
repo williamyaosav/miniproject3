@@ -1,7 +1,7 @@
 #include <iostream>
 #include <sstream>
 #include <cstdint>
-
+#include <climits>
 #include "./state.hpp"
 #include "../config.hpp"
 
@@ -11,9 +11,108 @@
  * 
  * @return int 
  */
-int State::evaluate(){
+long long State::evaluate(int player){
   // [TODO] design your own evaluation function
-  return 0;
+  long long val=0;
+  auto self_board = this->board.board[player];
+  auto oppo_board = this->board.board[1-player];
+  for(int i=0; i<BOARD_H; i+=1){
+    for(int j=0; j<BOARD_W; j+=1){
+      /*if(i<5 && !player && self_board[i][j])val+=(5-i);
+      if(i<5 && player && oppo_board[i][j])val-=(5-i);
+      if(i && !player && oppo_board[i][j])val-=(i);
+      if(i && player && self_board[i][j])val+=(i);*/
+      switch (self_board[i][j])
+      {
+      case 6:
+        val+=INT_MAX;
+        break;
+      case 5:
+        val+=20;
+        if(player==0) val+=std::max((5-i),(4-j));
+        else val+=std::max((i),(j));
+        //if(i>=2 && i<=3 && j>=1 && j<=3) val+=2;
+        break;
+      case 4:
+        val+=10;
+        if(player==0) val+=std::max((5-i),(4-j));
+        else val+=std::max((i),(j));
+        //if(i>=2 && i<=3 && j>=1 && j<=3) val+=2;
+        //if(i<5)val_w+=10+(5-i)*10;
+        break;
+      case 3:
+        val+=8;
+        if(player==0) val+=std::max((5-i),(4-j));
+        else val+=std::max((i),(j));
+        //if(i>=2 && i<=3 && j>=1 && j<=3) val+=2;
+        //if(i<5)val_w+=10+(5-i)*10;
+        break;
+      case 2:
+        val+=6;
+        if(player==0) val+=std::max((5-i),(4-j));
+        else val+=std::max((i),(j));
+        //if(i>=2 && i<=3 && j>=1 && j<=3) val+=2;
+        //if(i<5)val_w+=10+(5-i)*10;
+        break;
+      case 1:
+        val+=2;
+        if(player==0) val+=std::max((5-i),(4-j));
+        else val+=std::max((i),(j));
+        //if(i>=2 && i<=3 && j>=1 && j<=3) val+=2;
+        //if(i<5)val_w+=10+(5-i)*10;
+        break;
+      default:
+        break;
+      }
+      switch (oppo_board[i][j])
+      {
+      case 6:
+        val-=INT_MAX;
+        break;
+      case 5:
+        val-=20;
+        if(player==0) val-=std::max((i),(j));
+        else val-=std::max((5-i),(4-j));
+        //if(i>=2 && i<=3 && j>=1 && j<=3) val-=2;
+        //if(i>0)val_b+=10+(i)*10;
+        break;
+      case 4:
+        val-=10;
+        if(player==0) val-=std::max((i),(j));
+        else val-=std::max((5-i),(4-j));
+        //if(i>=2 && i<=3 && j>=1 && j<=3) val-=2;
+          //if(i>0)val_b+=10+(i)*10;
+        
+        break;
+      case 3:
+        val-=8;
+        if(player==0) val-=std::max((i),(j));
+        else val-=std::max((5-i),(4-j));
+        //if(i>=2 && i<=3 && j>=1 && j<=3) val-=2;
+          //if(i>0)val_b+=10+(i)*10;
+        
+        break;
+      case 2:
+        val-=6;
+        if(player==0) val-=std::max((i),(j));
+        else val-=std::max((5-i),(4-j));
+        //if(i>=2 && i<=3 && j>=1 && j<=3) val-=2;
+          //if(i>0)val_b+=10+(i)*10;
+        
+        break;
+      case 1:
+        val-=2;
+        if(player==0) val-=std::max((i),(j));
+        else val-=std::max((5-i),(4-j));
+        //if(i>=2 && i<=3 && j>=1 && j<=3) val-=2;
+          //if(i>0)val_b+=10+(i)*10;
+        break;
+      default:
+        break;
+      }
+    }
+  }
+  return val;
 }
 
 
@@ -93,7 +192,7 @@ void State::get_legal_actions(){
               //black
               if(!oppn_board[i+1][j] && !self_board[i+1][j])
                 all_actions.push_back(Move(Point(i, j), Point(i+1, j)));
-              if(j<BOARD_W-1 && (oppn_piece=oppn_board[i+1][j+1])>0){
+              if(j<BOARD_W-1 && (oppn_piece=oppn_board[i+1][j+1])>0){ //小兵吃右下
                 all_actions.push_back(Move(Point(i, j), Point(i+1, j+1)));
                 if(oppn_piece==6){
                   this->game_state = WIN;
@@ -101,7 +200,7 @@ void State::get_legal_actions(){
                   return;
                 }
               }
-              if(j>0 && (oppn_piece=oppn_board[i+1][j-1])>0){
+              if(j>0 && (oppn_piece=oppn_board[i+1][j-1])>0){ //小兵吃左下
                 all_actions.push_back(Move(Point(i, j), Point(i+1, j-1)));
                 if(oppn_piece==6){
                   this->game_state = WIN;
